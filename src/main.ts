@@ -5,6 +5,7 @@ import { seederUser } from './common/database/seederUser/seeder.user';
 import { seederRole } from './common/database/seederRole/seeder.role';
 import { seederEntitie } from './common/database/seederEntity/seeder.entitie';
 import { seederPermission } from './common/database/seederPermission/seeder.permission';
+import { FilterError } from './common/erros/filter/error.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,6 +22,9 @@ async function bootstrap() {
 
   const permissionSeeder=new seederPermission();
   await permissionSeeder.run(dataSource);
+
+  app.useGlobalFilters(new FilterError());
+
   await app.listen(3000);
 }
 bootstrap();

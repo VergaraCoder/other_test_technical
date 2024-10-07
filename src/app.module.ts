@@ -12,15 +12,21 @@ import { CommonModule } from './common/common.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmCredentials } from './common/database/db.config';
+import { StockModule } from './stock/stock.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal:true,
+      envFilePath:".env"
+    })
+    ,
     TypeOrmModule.forRootAsync({
       imports:[ConfigModule],
       inject:[ConfigService],
       useClass:TypeOrmCredentials
     })
-    ,AuthModule, UserModule, RoleModule, ProductModule, ProductCartModule, CartModule, OrderModule, PermissionModule, EntityModule, CommonModule],
+    ,AuthModule, UserModule, RoleModule, ProductModule, ProductCartModule, CartModule, OrderModule, PermissionModule, EntityModule, CommonModule, StockModule],
   controllers: [],
   providers: [],
 })

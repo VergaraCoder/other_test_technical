@@ -15,6 +15,6 @@ export class Stock {
     @Column()
     quantity:number;
 
-    @ManyToOne(()=>Product,product=>product.stock)
+    @ManyToOne(()=>Product,product=>product.stock,{eager:true})
     product:Product;
 }

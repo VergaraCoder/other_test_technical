@@ -6,6 +6,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { RoleService } from 'src/role/role.service';
 import { manageError } from 'src/common/erros/custom/custom.error';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -20,7 +21,8 @@ export class UserService {
     try{
       const findRole=await this.roleService.findRoleByName(createUserDto.nameRole);
       delete createUserDto.nameRole;
-      const dataUser=this.userRepository.create({...createUserDto,roleId:findRole.id});
+      const hasPassword=await bcrypt.hash(createUserDto.password,10);
+      const dataUser=this.userRepository.create({...createUserDto,roleId:findRole.id,password:hasPassword});
       await this.userRepository.save(dataUser);
       return dataUser;
     }catch(err:any){
@@ -47,6 +49,22 @@ export class UserService {
     try{
       const data=await this.userRepository.findOneBy({id});
       if(!data){
+        throw new manageError({
+          type:"NOT_FOUND",
+          message:"USER NOT FOUND"
+        });
+      } 
+      return data;
+    }catch(err:any){
+      throw manageError.signedError(err.message);
+    }
+  }
+
+  
+  async findOneUserByemail(email:string,password:string) {
+    try{
+      const data=await this.userRepository.findOneBy({email});
+      if(!data || !await bcrypt.compare(password, data.password) ){
         throw new manageError({
           type:"NOT_FOUND",
           message:"USER NOT FOUND"

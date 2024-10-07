@@ -20,8 +20,8 @@ export class User {
     @Column()
     roleId:number;
 
-    @ManyToOne(()=>Role,role=>role.user)
-    role:Role[];
+    @ManyToOne(()=>Role,role=>role.user,{eager:true})
+    role:Role;
 
     @OneToMany(()=>Cart,cart=>cart.user)
     cart:Cart[];

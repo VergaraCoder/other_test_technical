@@ -14,12 +14,29 @@ export class StockService {
     private stockRepository:Repository<Stock>
   ){}
 
-  create(createStockDto: CreateStockDto) {
-    return 'This action adds a new stock';
+  async create(createStockDto: CreateStockDto) {
+    try{
+      const dataStock=this.stockRepository.create(createStockDto);
+      await this.stockRepository.save(dataStock);
+      return dataStock;
+    }catch(err:any){
+      throw manageError.signedError(err.message);
+    }
   }
 
-  findAll() {
-    return `This action returns all stock`;
+  async findAll() {
+    try{
+      const registersStock=await this.stockRepository.find();
+      if(registersStock.length==0){
+        throw new manageError({
+          type:"NOT_FOUND",
+          message:"DOES THERE ARE NOT REGISTERS YET"
+        });
+      }
+      return registersStock;
+    }catch(err:any){
+      throw manageError.signedError(err.message);
+    }
   }
 
 
@@ -34,6 +51,7 @@ export class StockService {
             message:`THERE IS NOT ENOUGH ${query.product.nameProduct}`
           });
         }
+        await this.update(query.id,product.quantity);
         products.push(query);
       }
       return products;
@@ -43,15 +61,48 @@ export class StockService {
   }
 
 
-  findOne(id: number) {
-    return `This action returns a #${id} stock`;
+  async findOne(id: number) {
+    try{
+      const register=await this.stockRepository.findOne({where:{id:id}});
+      if(!register){
+        throw new manageError({
+          type:"NOT_FOUND",
+          message:"THIS REGISTER IN STOCK NOT EXIST"
+        });
+      }
+      return register;
+    }catch(err:any){
+      throw manageError.signedError(err.message);
+    }
   }
 
-  update(id: number, updateStockDto: UpdateStockDto) {
-    return `This action updates a #${id} stock`;
+  async update(id: number, updateStockDto: UpdateStockDto) {
+    try{
+      const {affected}=await this.stockRepository.update(id,updateStockDto);
+      if(affected==0){
+        throw new manageError({
+          type:"BAD_GATEWAY",
+          message:"THE REGISTER NOT EXIST IN STOCK"
+        });
+      }
+      return "perfectly updated"
+    }catch(err:any){
+      throw manageError.signedError(err.message);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} stock`;
+  async remove(id: number) {
+    try{
+      const {affected}=await this.stockRepository.delete(id);
+      if(affected==0){
+        throw new manageError({
+          type:"BAD_GATEWAY",
+          message:"FAILEF TO DELETE REGISTER OF STOCK"
+        });
+      }
+      return "perfectly deleted"
+    }catch(err:any){
+      throw manageError.signedError(err.message);
+    }
   }
 }

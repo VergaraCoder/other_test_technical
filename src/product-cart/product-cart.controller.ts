@@ -9,7 +9,7 @@ export class ProductCartController {
 
   @Post()
   create(@Body() createProductCartDto: CreateProductCartDto) {
-    return this.productCartService.create(createProductCartDto);
+    //return this.productCartService.create(createProductCartDto);
   }
 
   @Get()
@@ -19,16 +19,16 @@ export class ProductCartController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.productCartService.findOne(+id);
+    return this.productCartService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductCartDto: UpdateProductCartDto) {
-    return this.productCartService.update(+id, updateProductCartDto);
+    return this.productCartService.update(id, updateProductCartDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.productCartService.remove(+id);
+    return this.productCartService.remove(id);
   }
 }
